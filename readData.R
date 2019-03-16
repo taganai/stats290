@@ -1,16 +1,15 @@
 #' Read Sentiment140.csv file
 #'
-#' Read Sentiment140.csv file and create two tibble objects which can be used as inputs to other functions in the package.
+#' Read Sentiment140.csv file and create three tibble objects which can be used as inputs to other functions in the package.
 #' The same data sets are also included in the package, so other functions have no dependency on readData 
 #'
-#' @param x a numeric vector
 #' @param file as csv file containing tweeter messages, formatted same as Sentiment140.csv
-#' @param smoother one of the following: "loess", "lm", "glm", "gam"
-#' @return two tibble objects: original, and transformed with additional columns
+#' @return three tibble objects: original, transformed with additional columns, and tokenized by word
 #'
 #' @importFrom dplyr as_tibble
 #' @importFrom magrittr %>%
 #' @importFrom datetime as.time
+#' @importFrom tidytext str_detect str_remove_all unnest_tokens stop_words
 #'
 #' @keywords data cleanup
 #'
@@ -24,10 +23,12 @@
 library(dplyr) ## as_tibble
 library(magrittr) ## %>%
 library(datetime) ## as.time
+library(tidytext) ##str_detect str_remove_all unnest_tokens stop_words
 ## library(lubridate)
 
 sentiment.orig <- tibble()
 sentiment <- tibble()
+sentiment.words <- tibble()
 
 readData <- function(file = "Sentiment140.csv") {
   
@@ -45,7 +46,16 @@ readData <- function(file = "Sentiment140.csv") {
     weekday = weekdays(date)
   ) 
   
+  ## words
+  remove_reg <- "&amp;|&lt;|&gt;"
+  sentiment.words <<- sent %>% 
+    filter(!str_detect(tweet, "^RT")) %>%
+    mutate(tweet = str_remove_all(tweet, remove_reg)) %>%
+    unnest_tokens(word, tweet, token = "tweets") %>%
+    filter(!word %in% stop_words$word,
+           !word %in% str_remove_all(stop_words$word, "'"),
+           str_detect(word, "[a-z]"))
   ##saveRDS(sentiment.orig, file = "sentiment-orig.rds")
   ##saveRDS(sentiment, file = "sentiment.rds")
-  
+  ##saveRDS(sentiment.words, file = "sentiment-words.rds")
 }
