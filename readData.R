@@ -48,6 +48,4 @@ readData <- function(file = "Sentiment140.csv") {
   ##saveRDS(sentiment.orig, file = "sentiment-orig.rds")
   ##saveRDS(sentiment, file = "sentiment.rds")
   
-  ##return(sentiment.orig)
-  ##return(sentiment)
 }

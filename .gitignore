@@ -1,0 +1,7 @@
+
+data.R
+project-summary.Rmd
+sentiment-orig.rds
+sentiment.rds
+Sentiment140.csv
+training.1600000.processed.noemoticon.csv
